@@ -53,46 +53,72 @@ $.fn.scrollbox = function(config) {
     }
     containerUL = container.children(config.listElement + ':first-child');
 
+		ULFirstChild = containerUL.children(config.listItemElement + ':first-child');
+		ULFirstChild.attr('data-scroll', 'firstLi');
+
+		var ULWidth = LITotalWidth = itemsToScrollWidth = scrolledItemsWidth = 0;
+
     scrollForward = function() {
       if (paused) {
         return;
       }
+
       var curLi,
           i,
+					liLen,
           newScrollOffset,
           scrollDistance,
           theStep;
 
-      curLi = containerUL.children(config.listItemElement + ':first-child');
+			curLi = containerUL.children(config.listItemElement + ':first-child');
 
-      scrollDistance = config.distance !== 'auto' ? config.distance :
-        config.direction === 'vertical' ? curLi.outerHeight(true) : curLi.outerWidth(true);
+			if (curLi.attr('data-scroll') == 'firstLi') {
+				ULWidth = LITotalWidth = itemsToScrollWidth = scrolledItemsWidth = 0;
+			}
 
-      // offset
-      if (!config.linear) {
-        theStep = Math.max(3, parseInt((scrollDistance - container[0][config.scrollOffset]) * 0.3, 10));
-        newScrollOffset = Math.min(container[0][config.scrollOffset] + theStep, scrollDistance);
-      } else {
-        newScrollOffset = Math.min(container[0][config.scrollOffset] + config.step, scrollDistance);
-      }
-      container[0][config.scrollOffset] = newScrollOffset;
+			if(ULWidth == 0) {
+				ULWidth = $(containerUL).width();
+				containerUL.children().each(function(i, li) {
+					LITotalWidth += parseInt($(li).width(), 10) + parseInt($(li).css('margin-right'), 10);
+				});
+				itemsToScrollWidth = LITotalWidth - ULWidth;
+			}
 
-      if (newScrollOffset >= scrollDistance) {
-        for (i = 0; i < config.switchItems; i++) {
-          if (config.queue && config.queue.find(config.listItemElement).length > 0) {
-            containerUL.append(config.queue.find(config.listItemElement)[0]);
-            containerUL.children(config.listItemElement + ':first-child').remove();
-          } else {
-            containerUL.append(containerUL.children(config.listItemElement + ':first-child'));
-          }
-        }
-        container[0][config.scrollOffset] = 0;
-        clearInterval(scrollingId);
-        if (config.autoPlay) {
-          nextScrollId = setTimeout(forward, config.delay * 1000);
-        }
-      }
-    };
+			if (scrolledItemsWidth < itemsToScrollWidth) {
+
+				// init
+				if (container[0][config.scrollOffset] === 0) {
+
+					liLen = containerUL.children(config.listItemElement).length;
+					for (i = 0; i < config.switchItems; i++) {
+						containerUL.children(config.listItemElement + ':first-child').insertAfter(containerUL.children(config.listItemElement+':last-child'));
+						scrolledItemsWidth += parseInt(containerUL.children(config.listItemElement+':last-child').width(), 10) + parseInt(containerUL.children(config.listItemElement+':last-child').css('margin-right'), 10);
+					}
+
+					scrollDistance = config.distance !== 'auto' ?
+						config.distance :
+						config.direction === 'vertical' ? curLi.height() : curLi.width();
+					container[0][config.scrollOffset] = scrollDistance;
+				}
+
+				// offset
+				if (!config.linear) {
+					theStep = Math.max(3, parseInt((scrollDistance - container[0][config.scrollOffset]) * 0.3, 10));
+					newScrollOffset = Math.min(container[0][config.scrollOffset] + theStep, scrollDistance);
+				} else {
+					newScrollOffset = Math.min(container[0][config.scrollOffset] + config.step, 0);
+				}
+				container[0][config.scrollOffset] = newScrollOffset;
+
+				container[0][config.scrollOffset] = 0;
+				if (newScrollOffset === 0) {
+					clearInterval(scrollingId);
+					if (config.autoPlay) {
+						nextScrollId = setTimeout(forward, config.delay * 1000);
+					}
+				}
+			}
+		};
 
     // Backward
     // 1. If forwarding, then reverse
@@ -108,35 +134,38 @@ $.fn.scrollbox = function(config) {
           scrollDistance,
           theStep;
 
-      // init
-      if (container[0][config.scrollOffset] === 0) {
-        liLen = containerUL.children(config.listItemElement).length;
-        for (i = 0; i < config.switchItems; i++) {
-          containerUL.children(config.listItemElement + ':last-child').insertBefore(containerUL.children(config.listItemElement+':first-child'));
-        }
+			curLi = containerUL.children(config.listItemElement + ':first-child');
 
-        curLi = containerUL.children(config.listItemElement + ':first-child');
-        scrollDistance = config.distance !== 'auto' ?
-            config.distance :
-            config.direction === 'vertical' ? curLi.height() : curLi.width();
-        container[0][config.scrollOffset] = scrollDistance;
-      }
+			if (curLi.attr('data-scroll') != 'firstLi') {
+				// init
+				if (container[0][config.scrollOffset] === 0) {
+					liLen = containerUL.children(config.listItemElement).length;
+					for (i = 0; i < config.switchItems; i++) {
+						containerUL.children(config.listItemElement + ':last-child').insertBefore(containerUL.children(config.listItemElement+':first-child'));
+					}
 
-      // new offset
-      if (!config.linear) {
-        theStep = Math.max(3, parseInt(container[0][config.scrollOffset] * 0.3, 10));
-        newScrollOffset = Math.max(container[0][config.scrollOffset] - theStep, 0);
-      } else {
-        newScrollOffset = Math.max(container[0][config.scrollOffset] - config.step, 0);
-      }
-      container[0][config.scrollOffset] = newScrollOffset;
+					scrollDistance = config.distance !== 'auto' ?
+						config.distance :
+						config.direction === 'vertical' ? curLi.height() : curLi.width();
+					container[0][config.scrollOffset] = scrollDistance;
+				}
 
-      if (newScrollOffset === 0) {
-        clearInterval(scrollingId);
-        if (config.autoPlay) {
-          nextScrollId = setTimeout(forward, config.delay * 1000);
-        }
-      }
+				// new offset
+				if (!config.linear) {
+					theStep = Math.max(3, parseInt(container[0][config.scrollOffset] * 0.3, 10));
+					newScrollOffset = Math.max(container[0][config.scrollOffset] - theStep, 0);
+				} else {
+					newScrollOffset = Math.max(container[0][config.scrollOffset] - config.step, 0);
+				}
+				container[0][config.scrollOffset] = newScrollOffset;
+
+				if (newScrollOffset === 0) {
+					clearInterval(scrollingId);
+					if (config.autoPlay) {
+						nextScrollId = setTimeout(forward, config.delay * 1000);
+					}
+				}
+			}
     };
 
     forward = function() {

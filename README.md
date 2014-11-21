@@ -1,3 +1,7 @@
+# This is a fork of [jQuery Scrollbox](http://wmh.github.io/jquery-scrollbox/)
+
+This plugin is modified to serve my needs. I needed to have a limited scrollable tab view.
+
 # [jQuery Scrollbox](http://wmh.github.io/jquery-scrollbox/)
 
 jQuery Scrollbox is a lightweight plugin that enables you to scroll a list of html elements (text, image, etc...) like a carousel slider or traditional marquee.

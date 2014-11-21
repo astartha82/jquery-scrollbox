@@ -1,7 +1,7 @@
 {
-    "name": "jquery-scrollbox",
-    "version": "1.2.0",
-    "title": "jQuery Scrollbox",
+    "name": "jquery-scrollbox-tabbed",
+    "version": "2.1.0",
+    "title": "jQuery Scrollbox Tabbed",
     "description": "A simple, lightweight jQuery plugin to scroll a list like carousel or traditional marquee.",
     "keywords": [
         "carousel",
@@ -9,9 +9,9 @@
         "scroll"
     ],
     "author": {
-        "name": "Hunter Wu",
-        "url": "https://github.com/wmh/",
-        "email": "hunter.wu@gmail.com"
+        "name": "Lilith",
+        "url": "https://github.com/astartha82/",
+        "email": "lilith.zakharyan@gmail.com"
     },
     "licenses": [
         {
@@ -19,9 +19,7 @@
             "url": "http://ionden.com/a/plugins/licence-en.html"
         }
     ],
-    "homepage": "https://github.com/wmh/jquery-scrollbox",
-    "demo": "http://wmh.github.io/jquery-scrollbox/",
-    "download": "https://github.com/wmh/jquery-scrollbox/archive/master.zip",
+    "download": "https://github.com/astartha82/jquery-scrollbox/archive/master.zip",
     "dependencies": {
         "jquery": ">=1.4"
     }
